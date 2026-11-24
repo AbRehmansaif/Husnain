@@ -1,0 +1,6 @@
+/config/local.php
+/logs/*.log
+/storage/donors/*
+!/storage/donors/.gitkeep
+/storage/licences/*
+!/storage/licences/.gitkeep

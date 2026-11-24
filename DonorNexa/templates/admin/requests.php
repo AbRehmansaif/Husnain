@@ -1,0 +1,17 @@
+<?php $pageTitle = 'All requests'; ?>
+<section class="dashboard-hero dashboard-hero-compact"><div class="container dashboard-hero-inner"><div><span class="eyebrow">System-wide request oversight</span><h1>All blood <em>requests.</em></h1><p>Search and sort the request record across verified hospitals.</p></div><a class="button button-light button-small" href="<?= e(url('export', ['type' => 'requests'])) ?>">Export CSV ↓</a></div></section>
+<section class="section dashboard-section"><div class="container">
+    <form class="table-filters" method="get" action="<?= e(APP_URL) ?>/index.php">
+        <input type="hidden" name="page" value="admin_requests">
+        <label class="sr-only" for="admin-request-search">Search requests</label><input id="admin-request-search" name="q" value="<?= e($search) ?>" placeholder="Group, hospital or ward">
+        <label class="sr-only" for="admin-request-status">Filter status</label><select id="admin-request-status" name="status"><option value="">All statuses</option><?php foreach (['open', 'partially_fulfilled', 'fulfilled', 'cancelled', 'expired'] as $value): ?><option value="<?= e($value) ?>" <?= $status === $value ? 'selected' : '' ?>><?= e(str_replace('_', ' ', ucfirst($value))) ?></option><?php endforeach; ?></select>
+        <label class="sr-only" for="admin-request-sort">Sort by</label><select id="admin-request-sort" name="sort"><?php foreach (['urgency' => 'Urgency', 'deadline' => 'Deadline', 'created' => 'Date created', 'status' => 'Status'] as $value => $label): ?><option value="<?= e($value) ?>" <?= $sort === $value ? 'selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?></select>
+        <label class="sr-only" for="admin-request-direction">Sort direction</label><select id="admin-request-direction" name="direction"><option value="ASC" <?= $direction === 'ASC' ? 'selected' : '' ?>>Ascending</option><option value="DESC" <?= $direction === 'DESC' ? 'selected' : '' ?>>Descending</option></select>
+        <button class="button button-outline button-small" type="submit">Apply</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Request</th><th>Hospital</th><th>City</th><th>Urgency</th><th>Deadline</th><th>Units</th><th>Status</th></tr></thead><tbody>
+        <?php foreach ($requests as $request): ?><tr><td><span class="blood-chip blood-chip-small"><?= e($request['blood_group']) ?></span><strong class="table-primary"><?= e($request['ward']) ?></strong></td><td><?= e($request['hospital_name']) ?></td><td><?= e($request['city_name']) ?></td><td><span class="urgency urgency-<?= e($request['urgency']) ?>"><?= e(ucfirst($request['urgency'])) ?></span></td><td><?= e(date('M j, Y · H:i', strtotime($request['required_by']))) ?></td><td><?= e($request['units_fulfilled']) ?> / <?= e($request['units_needed']) ?><small class="reserved-label"><?= e($request['units_reserved']) ?> reserved</small></td><td><span class="status-pill status-<?= e($request['status']) ?>"><?= e(str_replace('_', ' ', ucfirst($request['status']))) ?></span></td></tr><?php endforeach; ?>
+        <?php if ($requests === []): ?><tr><td colspan="7" class="table-empty">No requests matched those filters.</td></tr><?php endif; ?>
+    </tbody></table></div>
+    <?php $paginationRoute = 'admin_requests'; $paginationParams = ['q' => $search, 'status' => $status, 'sort' => $sort, 'direction' => $direction]; require APP_ROOT . '/templates/partials/pagination.php'; ?>
+</div></section>
